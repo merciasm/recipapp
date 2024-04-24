@@ -13,7 +13,7 @@ This project uses **Swift Package Manager** to manage its dependencies.
 
 ### Alamofire
 
-[Alamofire]([https://github.com/Alamofire/Alamofire](https://github.com/Alamofire/Alamofire)) is an HTTP networking library written in Swift.
+[Alamofire](https://github.com/Alamofire/Alamofire) is an HTTP networking library written in Swift.
 
 ### RxSwift
 
