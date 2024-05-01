@@ -22,7 +22,16 @@ class RecipeCell: UITableViewCell {
         // Initialization code
     }
 
-    func setCellValues(recipe: Recipe) {
+    override func prepareForReuse() {
+        super.prepareForReuse()
+        recipeRating.text = nil
+        recipeName.text = nil
+        recipeDifficulty.text = nil
+        recipeServingsNumber.text = nil
+        recipeImage.image = nil
+    }
+
+    func setCellValues(recipe: RecipeDTO) {
         recipeName.text = recipe.name
         recipeRating.text = "\(recipe.rating)"
         recipeDifficulty.text = recipe.difficulty

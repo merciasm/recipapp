@@ -19,7 +19,7 @@ class DatabaseManager {
 
         do {
             try realm.write {
-                realm.add(object)
+                realm.add(object, update: .all)
             }
 
         } catch {

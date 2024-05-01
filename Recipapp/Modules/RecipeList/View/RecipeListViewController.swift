@@ -36,21 +36,23 @@ class RecipeListViewController: UIViewController {
                 cellIdentifier: "RecipeCell",
                 cellType: RecipeCell.self)
         ) { row, model, cell in
-            cell.setCellValues(recipe: model.self)
+            if !model.isInvalidated {
+                cell.setCellValues(recipe: model.self)
+            }
         }.disposed(by: disposeBag)
 
         tableView.rx.modelSelected(Recipe.self).bind { recipe in
             print(recipe)
         }.disposed(by: disposeBag)
 
-        viewModel.onFetchEnd.bind { onEnd in
-            if onEnd {
+        viewModel.onDataChanged.bind { onChanged in
+            if onChanged {
                 self.tableView.reloadData()
                 self.refreshControl.endRefreshing()
             }
         }.disposed(by: disposeBag)
 
-        viewModel.getAllRecipes()
+        viewModel.checkDataBase()
     }
 
     private func setupPullToRefresh() {
@@ -59,7 +61,7 @@ class RecipeListViewController: UIViewController {
             .subscribe(onNext: { [weak self] in
                 guard let self = self else { return }
                 self.refreshControl.beginRefreshing()
-                self.viewModel.getAllRecipes()
+                self.viewModel.getAllRecipes(refresh: true)
             }).disposed(by: disposeBag)
 
         tableView.refreshControl = refreshControl
