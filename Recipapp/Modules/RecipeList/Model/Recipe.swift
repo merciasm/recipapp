@@ -7,6 +7,7 @@
 
 import Foundation
 import RealmSwift
+import UIKit
 
 struct Recipe: Decodable {
     let id: Int
@@ -43,8 +44,9 @@ class RecipeDTO: Object, Decodable {
     @Persisted var tags: List<String>
     @Persisted var mealType: List<String>
     @Persisted var isPrepared: Bool
+    @Persisted var prepTimeString: String
 
-    convenience init(id: Int, name: String, image: String, ingredients: List<String>, difficulty: String, cuisine: String, prepTimeMinutes: Int, cookTimeMinutes: Int, rating: Double, servings: Int, caloriesPerServing: Int, reviewCount: Int, instructions: List<String>, tags: List<String>, mealType: List<String>, isPrepared: Bool) {
+    convenience init(id: Int, name: String, image: String, ingredients: List<String>, difficulty: String, cuisine: String, prepTimeMinutes: Int, cookTimeMinutes: Int, rating: Double, servings: Int, caloriesPerServing: Int, reviewCount: Int, instructions: List<String>, tags: List<String>, mealType: List<String>, isPrepared: Bool, prepTimeString: String) {
         self.init()
         self.id = id
         self.name = name
@@ -62,6 +64,7 @@ class RecipeDTO: Object, Decodable {
         self.tags = tags
         self.mealType = mealType
         self.isPrepared = isPrepared
+        self.prepTimeString = prepTimeString
     }
 }
 

@@ -11,20 +11,22 @@ import RxCocoa
 
 class RecipeListViewController: UIViewController {
 
-    // MARK: Properties
+    // MARK: - Properties
     @IBOutlet private var tableView: UITableView!
 
     private var viewModel = RecipeViewModel()
     private var disposeBag = DisposeBag()
     private let refreshControl = UIRefreshControl()
 
-    // MARK: Life Cycle
+    // MARK: - Life Cycle
 
     override func viewDidLoad() {
         super.viewDidLoad()
         configureTableView()
         setupPullToRefresh()
     }
+
+    // MARK: - Configuration
 
     private func configureTableView() {
         tableView.register(UINib(nibName: "RecipeCell", bundle: nil), forCellReuseIdentifier: "RecipeCell")
@@ -44,7 +46,7 @@ class RecipeListViewController: UIViewController {
 
         tableView.rx.modelSelected(RecipeDTO.self).bind { [weak self] recipe in
             guard let self = self else { return }
-            self.viewModel.route(to: Route.recipeDetail.rawValue, from: self)
+            self.viewModel.route(to: Route.recipeDetail.rawValue, from: self, parameters: recipe)
         }.disposed(by: disposeBag)
 
         viewModel.onDataChanged.bind { [weak self] onChanged in
@@ -57,6 +59,8 @@ class RecipeListViewController: UIViewController {
 
         viewModel.checkDataBase()
     }
+
+    // MARK: - Actions
 
     private func setupPullToRefresh() {
         refreshControl.rx
