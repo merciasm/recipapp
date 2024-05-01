@@ -13,6 +13,7 @@ class RecipeListViewController: UIViewController {
 
     // MARK: Properties
     @IBOutlet private var tableView: UITableView!
+
     private var viewModel = RecipeViewModel()
     private var disposeBag = DisposeBag()
     private let refreshControl = UIRefreshControl()
@@ -41,11 +42,13 @@ class RecipeListViewController: UIViewController {
             }
         }.disposed(by: disposeBag)
 
-        tableView.rx.modelSelected(Recipe.self).bind { recipe in
-            print(recipe)
+        tableView.rx.modelSelected(RecipeDTO.self).bind { [weak self] recipe in
+            guard let self = self else { return }
+            self.viewModel.route(to: Route.recipeDetail.rawValue, from: self)
         }.disposed(by: disposeBag)
 
-        viewModel.onDataChanged.bind { onChanged in
+        viewModel.onDataChanged.bind { [weak self] onChanged in
+            guard let self = self else { return }
             if onChanged {
                 self.tableView.reloadData()
                 self.refreshControl.endRefreshing()

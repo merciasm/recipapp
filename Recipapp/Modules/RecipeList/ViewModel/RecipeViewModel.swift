@@ -9,6 +9,7 @@ import Foundation
 import RxSwift
 import RealmSwift
 import RealmCoreResources
+import UIKit
 
 class RecipeViewModel {
     var items = PublishSubject<Results<RecipeDTO>>()
@@ -84,4 +85,18 @@ class RecipeViewModel {
 
     }
 
+}
+
+extension RecipeViewModel: Router {
+    func route(to routeID: String, from context: UIViewController, parameters: Any? = nil) {
+        guard let route = Route(rawValue: routeID) else {
+           return
+        }
+        switch route {
+        case .recipeDetail:
+            let viewController = RecipeDetailsViewController.initModule()
+            let navigationController = UINavigationController(rootViewController: viewController)
+            context.present(navigationController, animated: true, completion: nil)
+        }
+    }
 }
