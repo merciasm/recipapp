@@ -12,29 +12,43 @@ import RealmCoreResources
 import UIKit
 
 class RecipeViewModel {
+    /** This subject is used to emit sequences of Results<RecipeDTO>, which represent the results of querying the database for recipe items. Represents a live query result that automatically updates when the underlying data changes in Realm.
+     The subject type depends on the project needs and/or project pattern
+
+     **/
+
+    // MARK: - Properties
     var items = PublishSubject<Results<RecipeDTO>>()
     var onDataChanged = PublishSubject<Bool>()
 
-    var notificationToken: NotificationToken?
+    private var notificationToken: NotificationToken?
 
+    // MARK: - Init
     init() {
         notificationToken = DatabaseManager.shared.realm.observe({ notification, realm in
             self.items.onNext(DatabaseManager.shared.getAllItems())
         })
+
+        DatabaseManager.shared.observerRealmError { error in
+            debugPrint("Realm error", error as Any)
+        }
     }
+
+    // MARK: - Public functions
 
     func viewWillDisappear() {
         notificationToken?.invalidate()
+        DatabaseManager.shared.stopObservingErrors(in: self)
     }
 
     func checkDataBase() {
         let recipesResults = DatabaseManager.shared.getAllItems()
-            if recipesResults.isEmpty == true {
-                getAllRecipes()
-            } else {
-                items.onNext(recipesResults)
-                items.onCompleted()
-            }
+        if recipesResults.isEmpty == true {
+            getAllRecipes()
+        } else {
+            items.onNext(recipesResults)
+            items.onCompleted()
+        }
     }
 
     func getAllRecipes(refresh: Bool = false) {
@@ -52,15 +66,14 @@ class RecipeViewModel {
                     self?.items.onCompleted()
                 }
             case .failure(let error):
-                print(error)
+                debugPrint(error)
                 self?.items.onCompleted()
             }
         }
     }
 
-
-
-    func addRecipesOnDatabase(recipes: [Recipe]) {
+    // MARK: - Private functions
+    private func addRecipesOnDatabase(recipes: [Recipe]) {
         for recipe in recipes {
             let recipeDTO = RecipeDTO(
                 id: recipe.id,
@@ -78,23 +91,25 @@ class RecipeViewModel {
                 instructions: recipe.instructions,
                 tags: recipe.tags,
                 mealType: recipe.mealType,
-                isPrepared: false)
+                isPrepared: false,
+                prepTimeString: "")
             DatabaseManager.shared.create(recipeDTO)
         }
-
-
     }
 
 }
 
+// MARK: - Routing
 extension RecipeViewModel: Router {
     func route(to routeID: String, from context: UIViewController, parameters: Any? = nil) {
         guard let route = Route(rawValue: routeID) else {
-           return
+            return
         }
         switch route {
         case .recipeDetail:
-            let viewController = RecipeDetailsViewController.initModule()
+            guard let recipe = parameters as? RecipeDTO else { return }
+            let viewModel = RecipeDetailViewModel(recipeDTO: recipe)
+            let viewController = RecipeDetailsViewController.initModule(viewModel: viewModel)
             let navigationController = UINavigationController(rootViewController: viewController)
             context.present(navigationController, animated: true, completion: nil)
         }

@@ -166,7 +166,6 @@
 			isa = PBXGroup;
 			children = (
 				B3C6CA372BDF4A0A00B7AE2F /* View */,
-				B3C6CA362BDF4A0600B7AE2F /* Model */,
 				B3C6CA352BDF4A0000B7AE2F /* ViewModel */,
 			);
 			path = RecipeDetail;
@@ -178,13 +177,6 @@
 				B3C6CA4E2BE1C35100B7AE2F /* RecipeDetailViewModel.swift */,
 			);
 			path = ViewModel;
-			sourceTree = "<group>";
-		};
-		B3C6CA362BDF4A0600B7AE2F /* Model */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			path = Model;
 			sourceTree = "<group>";
 		};
 		B3C6CA372BDF4A0A00B7AE2F /* View */ = {

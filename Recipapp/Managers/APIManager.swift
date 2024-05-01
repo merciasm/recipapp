@@ -12,6 +12,7 @@ class APIManager {
     static let shared = APIManager()
     private init () {}
 
+    /** In bigger projects, this will be replaced by a better structure **/
     func fetchData<T: Decodable>(from url: URL, responseModel: T.Type, completion: @escaping (Result<Decodable, Error>) -> Void) {
         AF.request(url).validate().responseData { response in
             switch response.result {

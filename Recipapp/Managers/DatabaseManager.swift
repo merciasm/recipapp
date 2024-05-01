@@ -7,6 +7,7 @@
 
 import RealmSwift
 import Foundation
+import UIKit
 
 class DatabaseManager {
     static let shared = DatabaseManager()
@@ -16,14 +17,11 @@ class DatabaseManager {
     private init() {}
 
     func create<T: Object>(_ object: T) {
-
         do {
             try realm.write {
                 realm.add(object, update: .all)
             }
-
         } catch {
-            print(error)
             postError(error)
         }
 
@@ -36,7 +34,6 @@ class DatabaseManager {
                     object.setValue(value, forKey: key)
                 }
             }
-
         } catch {
             postError(error)
         }
@@ -48,7 +45,6 @@ class DatabaseManager {
             try realm.write {
                 realm.delete(object)
             }
-
         } catch {
             postError(error)
         }
@@ -60,9 +56,25 @@ class DatabaseManager {
         return recipeResults
     }
 
-    func postError(_ error: Error) {
-        // TODO: Make it observable
-        NotificationCenter.default.post(name: NSNotification.Name("Realm Error"), object: error)
+    // This could be done using other aproaches: such as with RxSwift or Combine
 
+    func postError(_ error: Error) {
+        NotificationCenter.default.post(name: NSNotification.Name("Realm Error"), object: error)
+    }
+
+    func observerRealmError(completion: @escaping (Error?) -> Void) {
+        NotificationCenter.default.addObserver(
+            forName: NSNotification.Name("Realm Error"),
+            object: nil,
+            queue: nil) { notification in
+                completion(notification.object as? Error)
+            }
+    }
+
+    func stopObservingErrors(in observer: Any) {
+        NotificationCenter.default.removeObserver(
+            observer,
+            name: NSNotification.Name("Realm Error"),
+            object: nil)
     }
 }
